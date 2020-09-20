@@ -2,7 +2,7 @@ require 'websocket-client-simple'
 require 'json'
 require 'open3'
 
-$OwnerQQ = '1071814607'
+$OwnerQQ = ''
 $Debug = false
 
 def msg(str)
@@ -174,7 +174,7 @@ end
 
 def info(user)
   puts user
-  info, s = Open3.capture2e("./osubot -k \"fd1f4ec238dea7e8b481819b57583f7ff5965be2\" -u \"#{user}\"")
+  info, s = Open3.capture2e("./osubot -k \"your key here\" -u \"#{user}\"")
   puts info
   # if $data["group_id"] = 527686231
   #     return ""
