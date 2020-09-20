@@ -1,0 +1,6 @@
+data
+logs
+config.json
+device.json
+servers.bin
+go-cqhttp.*
