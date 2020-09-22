@@ -3,15 +3,15 @@ Target = Struct.new(:messagetype, :time, :group_id, :user_id, :message_id, :mess
 module Bot
   class Main
     class << self
-      def DataProp(data)
+      def dataParse(data)
         msg = JSON.parse(data)
         if $DEBUGMODE == true
           puts msg if msg['meta_event_type'] != 'heartbeat'
         end
-        MsgEvent msg if msg['post_type'] == 'message'
+        msgEvent msg if msg['post_type'] == 'message'
       end
 
-      def MsgEvent(msg)
+      def msgEvent(msg)
         sdr = Sender.new
         tar = Target.new
         tar.time = msg['time']
