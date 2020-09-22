@@ -1,4 +1,4 @@
-require 'websocket-client-simple'
+require 'faye/websocket'
 require 'net/http'
 require 'json'
 module Bot

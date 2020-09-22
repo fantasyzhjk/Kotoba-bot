@@ -1,0 +1,1 @@
+rackup App.ru -s puma -E production -p 8080

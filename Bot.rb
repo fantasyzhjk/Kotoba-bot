@@ -5,29 +5,36 @@ module Bot
     class << self
       def dataParse(data)
         msg = JSON.parse(data)
-        if $DEBUGMODE == true
-          puts msg if msg['meta_event_type'] != 'heartbeat'
-        end
-        msgEvent msg if msg['post_type'] == 'message'
-      end
-
-      def msgEvent(msg)
         sdr = Sender.new
         tar = Target.new
         tar.time = msg['time']
-        tar.user_id = msg['user_id']
-        tar.message_id = msg['message_id']
-        tar.message = msg['message']
-        sdr.age = msg['sender']['age']
-        sdr.nickname = msg['sender']['nickname'] # 原有用户名
-        sdr.sex = msg['sender']['sex']
-        tar.messagetype = msg['message_type']
-        if tar.messagetype == 'group'
+        if msg['meta_event_type'] == 'lifecycle' && msg['sub_type'] == 'connect'
+          $SelfID = msg['self_id']
+          puts "[#{Time.at(tar.time).strftime('%Y-%m-%d %H:%M:%S')}][!]: go-cqhttp连接成功, BotQQ: #{$SelfID}"
+        end
+        if $DEBUGMODE == true
+          puts msg if msg['meta_event_type'] != 'heartbeat'
+        end
+        if msg['post_type'] == 'message'
+          tar.user_id = msg['user_id']
+          tar.message_id = msg['message_id']
+          tar.message = msg['message']
+          sdr.age = msg['sender']['age']
+          sdr.nickname = msg['sender']['nickname'] # 原有用户名
+          sdr.sex = msg['sender']['sex']
+          tar.messagetype = msg['message_type']
+          # Group only
           tar.group_id = msg['group_id']
           sdr.card = msg['sender']['card'] # 群昵称
           sdr.title = msg['sender']['title'] # 头衔
           sdr.member_role = msg['sender']['role']
           sdr.qqlevel = msg['sender']['level']
+          msgEvent msg, tar, sdr
+        end
+      end
+
+      def msgEvent(msg, tar, sdr)
+        if tar.messagetype == 'group'
           puts "[#{Time.at(tar.time).strftime('%Y-%m-%d %H:%M:%S')}][↓]: 收到群 #{tar.group_id} 内 #{sdr.nickname}(#{tar.user_id}) 的消息: #{tar.message} (#{tar.message_id})"
         else
           puts "[#{Time.at(tar.time).strftime('%Y-%m-%d %H:%M:%S')}][↓]: 收到好友 #{sdr.nickname}(#{tar.user_id}) 的消息: #{tar.message} (#{tar.message_id})"
@@ -135,6 +142,7 @@ module Bot
           message_id = JSON.parse(Utils.httpPost('http://127.0.0.1:7700/send_private_msg', ret))['data']['message_id']
           puts "[#{Time.new.strftime('%Y-%m-%d %H:%M:%S')}][↑]: 发送至私聊 #{tar.user_id} 的消息: #{msg} (#{message_id})"
         end
+        message_id
       end
     end
   end

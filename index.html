@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>鸽了！</title>
+    <style>
+        * {
+            -moz-user-select: none;
+            -o-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            margin: 0;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .mbox {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-justify-content: center;
+            justify-content: center;
+
+        }
+
+        .box {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-justify-content: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hito {
+            font-family: Microsoft Yahei UI, Microsoft Yahei, arial, sans-serif;
+            margin: 0 auto;
+            text-align: center;
+            border-radius: 8px;
+            margin: 30px;
+            box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.24),
+                0 17px 50px 0 rgba(0, 0, 0, 0.19);
+            height: auto;
+            min-height: 62.4px;
+            width: auto;
+            min-width: 300px;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .zi {
+            color: #2c3e50;
+            text-decoration-line: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://ico.z01.com/zico.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+SC&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="mbox">
+        <canvas id="canvas"> </canvas>
+        <div id="zhjk">
+            <p align="center">
+                <img src="https://i.loli.net/2020/05/10/8MPOXhKiktFHA49.jpg" style="
+              border-radius: 50%;
+              box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.24),
+                0 17px 50px 0 rgba(0, 0, 0, 0.19);
+            " draggable="false" alt="Zh_Jk" height="200" width="200" />
+            </p>
+            <p align="center">
+                <a href="https://github.com/fantasyzhjk" class="zi zi_tmGithub"></a>
+                <a href="mailto:fantasyzhjk@outlook.com" class="zi zi_envelope"></a>
+                <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1071814607" class="zi zi_tmQq"></a>
+            </p>
+            <div class="box">
+                <div class="hito" align="center">
+                    <p id="hito" style="
+            margin-left: 15px;
+            margin-right: 15px;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 18px;
+            text-align: center;
+          ">
+                        {{ obj.output }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/easy-typer-js@1.0.3/easy-typer-min.js"></script>
+
+            <script>
+                function random(low, high) {
+                    return Math.random() * (high - low) + low;
+                }
+
+                class Visual {
+                    constructor() {
+                        this.canvas = document.querySelector("#canvas");
+                        this.context = this.canvas.getContext("2d");
+                        this.canvasWidth = 0;
+                        this.canvasHeight = 0;
+                        this.particleLength = 150;
+                        this.particles = [];
+                        this.particleMaxRadius = 8;
+                        this.handleResizeBind = this.handleResize.bind(this);
+
+                        this.initialize();
+                        this.render();
+                    }
+
+                    initialize() {
+                        this.resizeCanvas();
+                        for (let i = 0; i < this.particleLength; i++) {
+                            this.particles.push(this.createParticle(i));
+                        }
+                        this.bind();
+                    }
+
+                    bind() {
+                        window.addEventListener("resize", this.handleResizeBind, false);
+                    }
+
+                    unbind() {
+                        window.removeEventListener("resize", this.handleResizeBind, false);
+                    }
+
+                    handleResize() {
+                        this.resizeCanvas();
+                    }
+
+                    resizeCanvas() {
+                        this.canvasWidth = document.body.offsetWidth;
+                        this.canvasHeight = document.body.offsetHeight;
+                        this.canvas.width = this.canvasWidth * window.devicePixelRatio;
+                        this.canvas.height = this.canvasHeight * window.devicePixelRatio;
+                        this.context = this.canvas.getContext("2d");
+                        this.context.scale(window.devicePixelRatio, window.devicePixelRatio);
+                    }
+
+                    createParticle(id, isRecreate) {
+                        const radius = random(1, this.particleMaxRadius);
+                        const x = isRecreate
+                            ? -radius - random(this.particleMaxRadius * 2, this.canvasWidth)
+                            : random(0, this.canvasWidth);
+                        let y = random(
+                            this.canvasHeight / 2 - 150,
+                            this.canvasHeight / 2 + 150
+                        );
+                        y += random(-100, 100);
+                        const alpha = random(0.05, 1);
+
+                        return {
+                            id: id,
+                            x: x,
+                            y: y,
+                            startY: y,
+                            radius: radius,
+                            defaultRadius: radius,
+                            startAngle: 0,
+                            endAngle: Math.PI * 2,
+                            alpha: alpha,
+                            color: { r: random(0, 100), g: random(0, 100), b: 255 },
+                            speed: alpha + 1,
+                            amplitude: random(50, 200),
+                            isBurst: false,
+                        };
+                    }
+
+                    drawParticles() {
+                        this.particles.forEach((particle) => {
+                            // 位置情報更新
+                            this.moveParticle(particle);
+                            // particle描画
+                            this.context.beginPath();
+                            this.context.fillStyle = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${particle.alpha})`;
+                            this.context.arc(
+                                particle.x,
+                                particle.y,
+                                particle.radius,
+                                particle.startAngle,
+                                particle.endAngle
+                            );
+                            this.context.fill();
+                        });
+                    }
+
+                    moveParticle(particle) {
+                        particle.x += particle.speed;
+                        particle.y =
+                            particle.startY +
+                            particle.amplitude * Math.sin(((particle.x / 5) * Math.PI) / 180);
+                    }
+
+                    render() {
+                        // canvas初期化
+                        this.context.clearRect(
+                            0,
+                            0,
+                            this.canvasWidth + this.particleMaxRadius * 2,
+                            this.canvasHeight
+                        );
+
+                        // particleを描画
+                        this.drawParticles();
+
+                        // 画面から消えたら新しいparticleに差し替え
+                        this.particles.forEach((particle) => {
+                            if (particle.x - particle.radius >= this.canvasWidth) {
+                                this.particles[particle.id] = this.createParticle(
+                                    particle.id,
+                                    true
+                                );
+                            }
+                        });
+
+                        requestAnimationFrame(this.render.bind(this));
+                    }
+                }
+
+                new Visual();
+            </script>
+            <script>
+                var hito = new Vue({
+                    el: "#hito",
+                    data: {
+                        // hitokoto: "",
+                        obj: {
+                            output: "",
+                            isEnd: false,
+                            speed: 80,
+                            singleBack: false,
+                            sleep: 1000,
+                            type: "rollback",
+                            backSpeed: 40,
+                            sentencePause: true,
+                        },
+                    },
+                    methods: {
+                        refresh() {
+                            if (this.obj.output == "") {
+                                this.fetchData();
+                            }
+                        },
+                        fetchData() {
+                            fetch("https://v1.hitokoto.cn")
+                                .then((res) => {
+                                    return res.json();
+                                })
+                                .then(({ hitokoto }) => {
+                                    this.initTyped(hitokoto);
+                                    // this.hitokoto = `${hitokoto}`
+                                })
+                                .catch((err) => {
+                                    console.error(err);
+                                });
+                        },
+                        initTyped(input, fn, hooks) {
+                            const obj = this.obj;
+                            const typed = new EasyTyper(obj, input, fn, hooks);
+                        },
+                    },
+                    mounted() {
+                        this.refresh();
+                        setInterval(this.refresh, 1000);
+                    },
+                });
+            </script>
+</body>
+
+</html>
