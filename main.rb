@@ -5,7 +5,7 @@ $DEBUGMODE = 'false'.freeze
 begin
   ws = WebSocket::Client::Simple.connect 'ws://localhost:6700/'
   ws.on :message do |msg|
-    Thread.start { Bot::Main.DataProp msg.data }
+    Thread.start { Bot::Main.dataParse msg.data }
   end
 
   ws.on :open do
