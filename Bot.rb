@@ -135,11 +135,11 @@ module Bot
       def msgPost(msg, tar)
         if tar.messagetype == 'group'
           ret = { group_id: tar.group_id, message: msg }.to_json
-          message_id = JSON.parse(Utils.httpPost('http://127.0.0.1:7700/send_group_msg', ret))['data']['message_id']
+          message_id = JSON.parse(Utils.httpPost('http://127.0.0.1:5700/send_group_msg', ret))['data']['message_id']
           puts "[#{Time.new.strftime('%Y-%m-%d %H:%M:%S')}][↑]: 发送至群 #{tar.group_id} 的消息: #{msg} (#{message_id})"
         elsif tar.messagetype == 'private'
           ret = { user_id: tar.user_id, message: msg }.to_json
-          message_id = JSON.parse(Utils.httpPost('http://127.0.0.1:7700/send_private_msg', ret))['data']['message_id']
+          message_id = JSON.parse(Utils.httpPost('http://127.0.0.1:5700/send_private_msg', ret))['data']['message_id']
           puts "[#{Time.new.strftime('%Y-%m-%d %H:%M:%S')}][↑]: 发送至私聊 #{tar.user_id} 的消息: #{msg} (#{message_id})"
         end
         message_id
